@@ -1,9 +1,9 @@
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
+import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,27 +17,30 @@ public class Main {
     private static int creditIndex;
     private static int courseNatureIndex;
 
-    public static void main(String[] args) throws IOException, InvalidFormatException {
-        if (args == null || args.length == 0) {
-            System.out.println("未指定参数");
-            System.exit(1);
-        }
-        XSSFWorkbook sheets = new XSSFWorkbook(new File(args[0]));
-        XSSFSheet sheet = sheets.getSheetAt(0);
-
-        title = getTitle(sheet);
-        body = getBody(sheet);
-        scoreIndex = getScoreIndex();
-        creditIndex = getCreditIndex();
-        GPAIndex = getGPAIndex();
-        courseNatureIndex = getCourseNatureIndex();
+    public static void main(String[] args) throws IOException {
+        Console console = System.console();
+        String path = console.readLine();
+        XSSFWorkbook sheets = new XSSFWorkbook(path);
+        initVariables(sheets);
 
         Double a =  calculateA();   // 计算学分加权平均分
         Double b = calculateB();   // 计算平均学分绩点
 
         System.out.printf("学分加权平均分：%.2f\r\n平均学分绩点：%.2f%n", a, b);
 
+        console.readLine();
         sheets.close();
+    }
+
+    // 初始化所需的变量
+    private static void initVariables(XSSFWorkbook sheets) {
+        XSSFSheet sheet = sheets.getSheetAt(0);
+        title = getTitle(sheet);
+        body = getBody(sheet);
+        scoreIndex = getScoreIndex();
+        creditIndex = getCreditIndex();
+        GPAIndex = getGPAIndex();
+        courseNatureIndex = getCourseNatureIndex();
     }
 
     private static int getCourseNatureIndex() {
